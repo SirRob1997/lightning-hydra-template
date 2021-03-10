@@ -2,7 +2,6 @@
 __pycache__/
 *.py[cod]
 *$py.class
-.github
 
 # C extensions
 *.so
@@ -25,21 +24,6 @@ wheels/
 .installed.cfg
 *.egg
 MANIFEST
-
-# Lightning /research  
-test_tube_exp/
-tests/tests_tt_dir/
-tests/save_dir
-default/   
-data/
-test_tube_logs/
-test_tube_data/
-datasets/
-model_weights/
-tests/save_dir  
-tests/tests_tt_dir/
-processed/
-raw/
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -123,7 +107,6 @@ venv.bak/
 .idea
 .vscode
 
-# seed project
-lightning_logs/
-MNIST
+# Misc
 .DS_Store
+.tags
