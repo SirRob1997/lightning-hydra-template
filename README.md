@@ -9,6 +9,9 @@ Use this template to rapidly bootstrap a DL project:
 
 ## Quick start
 
+<details><summary>Click to expand</summary>
+<p>
+    
 ### 0. Clone this template
 ```bash
 # clone project or create a new one from GitHub's template
@@ -61,11 +64,16 @@ python main.py
 # Override defaults from command line
 python main.py model=autoencoder data=cifar trainer.gpus=8
 ```
+</p>
+</details>
 
 ## How it works
 This section will provide a brief introduction on how these components all come together. 
 Please refer to the original documents of [Pytorch Lightning](pytorchlightning.ai/), [Hydra](hydra.cc/) and [TensorBoard](tensorboard.dev) for details.
 
+<details><summary>Click to expand</summary>
+<p>
+    
 ### Entry points
 The launching point of the project is [`main.py`](main.py) located in the root directory.
 The `main()` function takes in a `DictConfig` object, which is prepared by `hydra` based on the `yaml` files and command line arguments provided at runtime.
@@ -75,6 +83,7 @@ This is achieved by decorating the script `main()` function with `hydra.main()`,
 def main(cfg: DictConfig) -> None: ...
 ```
 This allow us to define multiple entry points for different functionalities with different defaults, such as `train.py`, `ensemble.py`, `test.py`, etc.
+
 
 ### Dynamically instantiate modules
 We will [use Hydra to instantiate objects](https://hydra.cc/docs/patterns/instantiate_objects/overview).
@@ -145,11 +154,16 @@ def main():
     ...
 ```
 
+</p>
+</details>
 
 ## Best practices
 
+<details><summary>Click to expand</summary>
+<p>
+    
 ### `LightningModule` and `LightningDataModule`
-##### Be explicit about input arguments
+#### Be explicit about input arguments
 Each modules should be self-contained and self-explanatory, to maximize reusability, even across projects.
 - **Don't** do this:
 ```python
@@ -188,16 +202,17 @@ Also see Pytorch Lightning's [official style guide](https://pytorch-lightning.re
 - Group metrics by type, not on what data it was evaluate with:
     - Don't: `val/loss`, `val/accuracy`, `train/loss`, `train/acc`
     - Do:   `loss/val`, `loss/train`, `accuracy/val`, `accuracy/train`
+    ![Metric grouping](https://pytorch.org/docs/stable/_images/hier_tags.png)
 - Log computation graph of `LightningModule` by:
     - Define `self.example_input_array` in your module's `__init__()`
     - Enable in TensorBoard with `TensorBoard(log_graph=True)`
-    #TODO image
+    ![Compute Graph](https://raw.githubusercontent.com/tensorflow/tensorboard/master/docs/images/graphs_conceptual.png)
 - [Proper](https://pytorch-lightning.readthedocs.io/en/latest/extensions/logging.html#logging-hyperparameters) logging of hyper-parameters and metrics
-#TODO Image
-
+    ![Tensorboard Parallel Coordinate](https://www.tensorflow.org/tensorboard/images/hparams_parallel_coordinates.png)
 
 
 ### Hydra
+
 Hydra serves two intertwined purposes, configuration management and script launcher.
 These two purposes are dealt with jointly because each run can potentially has a different set of configs.
 
@@ -205,10 +220,16 @@ This provides a nice separation of concerns, in which the python scripts only fo
 With this separate, it's easy to use Hydra's [sweeper](https://hydra.cc/docs/plugins/ax_sweeper) to do hyperparameters search, or [launcher](https://hydra.cc/docs/plugins/submitit_launcher) to run experiments on SLURM cluster or cloud.
 
 
+</p>
+</details>
+
 ## Tips and tricks
 
-
+<details><summary>Click to expand</summary>
+<p>
+    
 ### Debug
+    
 - Drop into a debugger anywhere in your code with a single line `import pdb; pdb.set_trace()`.
 - Use `ipdb` or [pudb](github.com/inducer/pudb) for nicer debugging experience, for example `import pudb; pudb.set_trace()`
 - Or just use `breakpoint()` for Python 3.7 or above. Set `PYTHONBREAKPOINT` environment variable to make `breakpoint()` use `ipdb` or `pudb`, for example `PYTHONBREAKPOINT=pudb.set_trace`.
@@ -219,8 +240,8 @@ $ ipython --pdb main.py -- model=autoencoder
 This is super helpful to inspect the variables values when it fails, without having to put a breakpoint and then run the script again, which can takes a long time to start for deep learning model.
 - Use `fast_dev_run` of PytorchLightning, and checkout the entire [debugging tutorial](https://pytorch-lightning.readthedocs.io/en/stable/common/debugging.html).
 
-
 ### Colored Logs
+    
 It's 2021 already, don't squint at your 4K HDR Quantum dot monitor to find a line from the black&white log.
 `pip install hydra-colorlog` and edit `defaults.yaml` to colorize your log file:
 ```yaml
@@ -237,8 +258,8 @@ logger.info("My log")
 
 Alternative: [loguru](https://github.com/Delgan/loguru), [coloredlogs](https://github.com/xolox/python-coloredlogs).
 
-
 ### Auto activate conda environment and export variables
+    
 [Zsh-autoenv](https://github.com/Tarrasch/zsh-autoenv) will auto source the content of `.autoenv.zsh` when you `cd` into a folder contains that file.
 Say goodbye to activate conda or export a bunch of variables for every new terminal:
 ```bash
@@ -248,6 +269,9 @@ PYTHON_BREAKPOINT=pudb.set_trace
 ```
 
 Alternative: https://github.com/direnv/direnv, https://github.com/cxreg/smartcd, https://github.com/kennethreitz/autoenv
+
+</p>
+</details>
 
 
 ## TODO
@@ -267,7 +291,7 @@ Alternative: https://github.com/direnv/direnv, https://github.com/cxreg/smartcd,
 
 <div align="center">
  
-# Your Project Name     
+# ConSelfSTransDrLIB: Contrastive Self-supervised Transformer for Disentangled Representation Learning with Inductive Biases is All you need, and where to find them.   
 
 [![Paper](http://img.shields.io/badge/paper-arxiv.1001.2234-B31B1B.svg)](https://www.nature.com/articles/nature14539)
 [![Conference](http://img.shields.io/badge/NeurIPS-2019-4b44ce.svg)](https://papers.nips.cc/book/advances-in-neural-information-processing-systems-31-2018)
@@ -278,11 +302,11 @@ Alternative: https://github.com/direnv/direnv, https://github.com/cxreg/smartcd,
 </div>
  
 ## Description   
-Code for paper `ConSelfSTransDrLIB: Contrastive Self-supervised Transformer for Disentangled Representation Learning with Inductive Biases is All you need, and where to find them.`
+Code for paper paper.
 
 ## How to run 
 ```bash
-python abracadabra.py
+python main.py
 ```
 
 
