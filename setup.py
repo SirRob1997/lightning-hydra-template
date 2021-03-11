@@ -1,9 +1,8 @@
-#TODO 1) Name your project, change the project folder name as well
 from setuptools import setup, find_packages
 
 setup(
     name='project',
-    version='0.0.0',
+    version='0.0.1',
     description='Describe Your Cool Project',
     author='',
     author_email='',

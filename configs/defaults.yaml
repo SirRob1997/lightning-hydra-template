@@ -12,6 +12,9 @@ defaults:
   - data: mnist  # Path to sub-config, can also omit the .yaml extension
   - model: classifier.yaml  # I add full path for easy navigation in vim (cursor in path, press gf)
 
+  - override hydra/job_logging: colorlog
+  - override hydra/hydra_logging: colorlog
+
 # Pytorch lightning trainer's argument
 # default flags are commented to avoid clustering the hyperparameters
 trainer:

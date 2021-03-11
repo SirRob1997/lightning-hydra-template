@@ -1,6 +1,6 @@
 name: LitAutoEncoder
 
-_target_: project.model.lit_autoencoder.LitAutoEncoder
+_target_: project.model.autoencoder.LitAutoEncoder
 hidden_dim: 128
 
 defaults:

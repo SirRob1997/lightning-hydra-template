@@ -1,4 +1,3 @@
-#TODO 2) Specify environment's name and dependencies
 name: project
 channels:
   - pytorch
@@ -7,15 +6,16 @@ dependencies:
   - python=3.8
   - ipython
   - numpy
-  - cudatoolkit
-  - pytorch
-  - torchvision
+  - cudatoolkit=11.0
+  - pytorch>=1.8
+  - torchvision>=0.8
+  # Add pip as a dependencies in this environment
   - pip
-  - pip:  # Installed packages not on conda through pip
-    - -e .  # Install project package in development mode
+  # Use pip to installed packages not on conda
+  - pip:
+    - -e .  # Install project package in edit mode, so you don't have to run this everytime you edit your python files
     - -r tests/requirements.txt  # Install packages only for testing purpose
-    - pytorch-lightning>=1.2.0
+    - pytorch-lightning>=1.2.0  # Can also specify version requirements
     - hydra-core --pre  # Using 1.1 pre-release for the moment
-    - loguru
-    - coloredlogs
-    - pudb
+    - hydra-colorlog --pre
+    - pudb  # Terminal debugger
