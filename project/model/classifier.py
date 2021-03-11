@@ -23,6 +23,11 @@ class LitClassifier(pl.LightningModule):
         x = torch.relu(self.l2(x))
         return x
 
+    # https://pytorch-lightning.readthedocs.io/en/latest/extensions/logging.html#logging-hyperparameters
+    # Using custom or multiple metrics (default_hp_metric=False)
+    def on_train_start(self):
+        self.logger.log_hyperparams(self.hparams, {"loss/val": 0, "accuracy/val": 0, "accuracy/test": 0})
+
     def training_step(self, batch, batch_idx):
         x, y = batch
         y_hat = self(x)
@@ -39,19 +44,19 @@ class LitClassifier(pl.LightningModule):
         self.log('accuracy/val', accuracy)
 
     def validation_epoch_end(self, outputs):
-        # Log metrics and hparams in tensorboard
-        self.logger.log_hyperparams(self.hparams, {"accuracy/val": self.val_accuracy.compute()})
+        self.log("accuracy/val", self.val_accuracy.compute())
 
     def test_step(self, batch, batch_idx):
         x, y = batch
         y_hat = self(x)
         loss = F.cross_entropy(y_hat, y)
         self.log('loss/test', loss)
-        accuracy = self.test_accuracy(torch.softmax(y_hat, dim=1), y)
-        self.log('accuracy/test', accuracy)
+        test_accuracy = self.test_accuracy(torch.softmax(y_hat, dim=1), y)
+        return test_accuracy
 
     def test_epoch_end(self, outputs):
-        self.logger.log_hyperparams(self.hparams, {"accuracy/test": self.test_accuracy.compute()})
+        self.log('accuracy/test', self.test_accuracy.compute())
+
 
     def configure_optimizers(self):
         return hydra.utils.instantiate(self.hparams.optim, params=self.parameters())

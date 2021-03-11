@@ -192,6 +192,9 @@ Also see Pytorch Lightning's [official style guide](https://pytorch-lightning.re
     - Define `self.example_input_array` in your module's `__init__()`
     - Enable in TensorBoard with `TensorBoard(log_graph=True)`
     #TODO image
+- [Proper](https://pytorch-lightning.readthedocs.io/en/latest/extensions/logging.html#logging-hyperparameters) logging of hyper-parameters and metrics
+#TODO Image
+
 
 
 ### Hydra
@@ -204,9 +207,6 @@ With this separate, it's easy to use Hydra's [sweeper](https://hydra.cc/docs/plu
 
 ## Tips and tricks
 
-<detail>
-
-<summary> Optional goodies </summary>
 
 ### Debug
 - Drop into a debugger anywhere in your code with a single line `import pdb; pdb.set_trace()`.
@@ -249,8 +249,6 @@ PYTHON_BREAKPOINT=pudb.set_trace
 
 Alternative: https://github.com/direnv/direnv, https://github.com/cxreg/smartcd, https://github.com/kennethreitz/autoenv
 
-</detail>
-
 
 ## TODO
 - [ ] Pre-commit hook for python `black`, `isort`.
@@ -258,6 +256,7 @@ Alternative: https://github.com/direnv/direnv, https://github.com/cxreg/smartcd,
 - [ ] [Experiments](https://hydra.cc/docs/next/patterns/configuring_experiments) 
 - [ ] [Structured Configs](https://hydra.cc/docs/next/tutorials/structured_config/intro/#internaldocs-banner)
 - [ ] [Hydra Torch](https://github.com/pytorch/hydra-torch) and [Hydra Lightning](https://github.com/romesco/hydra-lightning)
+- [ ] [Keepsake](https://keepsake.ai/) version control
 
 
 

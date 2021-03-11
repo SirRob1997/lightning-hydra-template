@@ -23,7 +23,7 @@ def main(cfg: DictConfig) -> None:
     data_module = hydra.utils.instantiate(cfg.data)
 
     # Let hydra manage direcotry outputs
-    tensorboard = pl.loggers.TensorBoardLogger(".", "", "", log_graph=True)
+    tensorboard = pl.loggers.TensorBoardLogger(".", "", "", log_graph=True, default_hp_metric=False)
     callbacks = [
         pl.callbacks.ModelCheckpoint(monitor='loss/val'),
         pl.callbacks.EarlyStopping(monitor='loss/val', patience=50),
