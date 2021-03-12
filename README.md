@@ -3,13 +3,17 @@ Use this template to rapidly bootstrap a DL project:
 
 - Write code in [Pytorch Lightning](https://www.pytorchlightning.ai/)'s `LightningModule` and `LightningDataModule`.
 - Run code from composable `yaml` configurations with [Hydra](https://hydra.cc/).
-- Manage packages in `environment.yaml` with [`conda`](https://docs.conda.io/projects/conda/en/latest/glossary.html#miniconda-glossary).
+- Manage packages in `environment.yaml` with [conda](https://docs.conda.io/projects/conda/en/latest/glossary.html#miniconda-glossary).
 - Log and visualize metrics + hyperparameters with [Tensorboard](https://tensorboard.dev/).
-- Sane default with best practices only where it makes sense for research-style project.
+- Sane default with best/good practices only where it makes sense for small-scale research-style project.
+
+Have an issue, found a bug, know a better practice? Feel free to open an issue, pull request or discussion thread. All contribution welcome.
+
+I hope to maintaining this repo with better deep learning engineering practices as they evolve.
 
 ## Quick start
 
-<details><summary>Click to expand</summary>
+<details><summary>Click to expand/collapse</summary>
 <p>
     
 ### 0. Clone this template
@@ -71,12 +75,13 @@ python main.py model=autoencoder data=cifar trainer.gpus=8
 This section will provide a brief introduction on how these components all come together. 
 Please refer to the original documents of [Pytorch Lightning](pytorchlightning.ai/), [Hydra](hydra.cc/) and [TensorBoard](tensorboard.dev) for details.
 
-<details><summary>Click to expand</summary>
+<details><summary>Click to expand/collapse</summary>
 <p>
     
 ### Entry points
 The launching point of the project is [`main.py`](main.py) located in the root directory.
 The `main()` function takes in a `DictConfig` object, which is prepared by `hydra` based on the `yaml` files and command line arguments provided at runtime.
+
 This is achieved by decorating the script `main()` function with `hydra.main()`, which requires a path to all the configs and a default `.yaml` file as follow:
 ```python
 @hydra.main(config_path="configs", config_name="defaults")
@@ -92,9 +97,10 @@ Given a [`configs/defaults.yaml`](configs/defaults.yaml) file contains:
 ```yaml
 defaults:
   - data: mnist  # Path to sub-config, can also omit the .yaml extension
-  - model: classifier.yaml  # I add full path for easy navigation in vim (cursor in path, press gf)
+  - model: classifier.yaml  # full path for ease of navigation (e.g vim cursor in path, press gf)
 ```
-Different modules can be instantiated for each run by supplying a different configuration:
+
+Different modules can be instantiated for each run by supplying a different set of configuration:
 ```bash
 # Using default
 $ python main.py 
@@ -102,16 +108,17 @@ $ python main.py
 # The default is equivalent to
 $ python main.py model=classifier data=mnist
 
-# Specify a different modules
+# Override a default module
 $ python main.py model=autoencoder
 $ python main.py data=cifar
 
-# Specify multiple modules and arguments
+# Override multiple default modules and arguments
 $ python main.py model=autoencoder data=cifar trainer.gpus=4
 ```
 
-The line that will instantiate module is, for example `data_module = hydra.utils.instantiate(cfg.data)`.
-`cfg.data` is a `DictConfig`, which is stored in [`configs/data/mnist.yaml`](configs/data/mnist.yaml) and contains:
+In python, the module will be instantiated by a line, for example `data_module = hydra.utils.instantiate(cfg.data)`.
+
+`cfg.data` is a `DictConfig` object created by `hydra` at runtime, and is stored in a config file, for example [`configs/data/mnist.yaml`](configs/data/mnist.yaml):
 ```yaml
 name: mnist
 
@@ -130,10 +137,10 @@ and the _target_: `project.data.MNISTDataModule` to be instantiated is:
 ```python
 class MNISTDataModule(pl.LightningDataModule):
     def __init__(self, data_dir: str = "",
-                batch_size: int = 32,
-                num_workers: int = 8,
+                       batch_size: int = 32,
+                       num_workers: int = 8,
                 **kwargs): ...
-    # **kwaargs is used to handle arguments in the DictConfig but not used for init
+# kwargs is used to handle arguments in the DictConfig but not used for init
 ```
 
 ### Directory management
@@ -146,12 +153,9 @@ hydra:
     # Example "outputs/mnist/classifier/baseline/2021-03-10-141516"
     dir: outputs/${data.name}/${model.name}/${experiment}/${now:%Y-%m-%d_%H%M%S}
 ```
-and tell `TensorBoardLogger()` to use the current working directory specified by `hydra`:
+and tell `TensorBoardLogger()` to use the current working directory without adding anything:
 ```python
-def main():
-    ...
-    tensorboard = pl.loggers.TensorBoardLogger(".", "", "")
-    ...
+tensorboard = pl.loggers.TensorBoardLogger(".", "", "")
 ```
 
 </p>
@@ -159,7 +163,7 @@ def main():
 
 ## Best practices
 
-<details><summary>Click to expand</summary>
+<details><summary>Click to expand/collapse</summary>
 <p>
     
 ### `LightningModule` and `LightningDataModule`
@@ -178,18 +182,16 @@ You will not like it when having to track down the config file every time just t
 ```python
 class LitAutoEncoder(pl.LightningModule):
     def __init__(self,
-        input_dim: int,
-        output_dim: int,
-        hidden_dim: int = 64,
-        optim_encoder=None,
-        optim_decoder=None,
-        **kwargs):
+        input_dim: int, output_dim: int, hidden_dim: int = 64,
+        optim_encoder=None, optim_decoder=None,
+    **kwargs):
         super().__init__()
         self.save_hyperparameters()
         # Later all input arguments can be accessed anywhere by
         self.hparams.input_dim
         # Use this to avoid boilderplate code such as
         self.input_dim = input_dim
+        self.output_dim = output_dim
 ```
 
 
@@ -207,17 +209,35 @@ Also see Pytorch Lightning's [official style guide](https://pytorch-lightning.re
     - Define `self.example_input_array` in your module's `__init__()`
     - Enable in TensorBoard with `TensorBoard(log_graph=True)`
     ![Compute Graph](https://raw.githubusercontent.com/tensorflow/tensorboard/master/docs/images/graphs_conceptual.png)
-- [Proper](https://pytorch-lightning.readthedocs.io/en/latest/extensions/logging.html#logging-hyperparameters) logging of hyper-parameters and metrics
+- [Proper loggin](https://pytorch-lightning.readthedocs.io/en/latest/extensions/logging.html#logging-hyperparameters) of hyper-parameters and metrics
     ![Tensorboard Parallel Coordinate](https://www.tensorflow.org/tensorboard/images/hparams_parallel_coordinates.png)
 
 
 ### Hydra
 
+#### Script is for one run, launcher is for multiple run
 Hydra serves two intertwined purposes, configuration management and script launcher.
 These two purposes are dealt with jointly because each run can potentially has a different set of configs.
 
 This provides a nice separation of concerns, in which the python scripts only focus on the functionalities of individual run, while the `hydra` command line will orchestrate multiple runs.
-With this separate, it's easy to use Hydra's [sweeper](https://hydra.cc/docs/plugins/ax_sweeper) to do hyperparameters search, or [launcher](https://hydra.cc/docs/plugins/submitit_launcher) to run experiments on SLURM cluster or cloud.
+With this separation, it's easy to use Hydra's [sweeper](https://hydra.cc/docs/plugins/ax_sweeper) to do hyperparameters search, or [launcher](https://hydra.cc/docs/plugins/submitit_launcher) to run experiments on SLURM cluster or cloud.
+
+#### Provide absolute path in config
+To provide path into program, it's best to provide an absolute path for both local or cloud storage (start with `~`, `/`, `s3://`).
+
+That way you don't have litter your code with `hydra.utils.get_original_cwd()` to convert relative path, and therefore retaining the flexibility to use your module outside of `hydra`-managed entry points.
+
+#### Naming experiments
+Use `hydra` to created a hierarchical structure for experiments output based on configurations of each run, by setting the `configs/defaults.yaml` with 
+```
+dir: outputs/${data.name}/${model.name}/${experiment}/${now:%Y-%m-%d_%H%M%S}
+```
+
+- `${data.name}/${model.name}` will be dynamically determined from config object. They are preferably nested by the order of least frequently changed.
+- `${experiment}` is a string briefly describe the purpose of the experiment
+- `${now:%Y-%m-%d_%H%M%S}` will insert the time of run, serves as a unique identifier for runs differ only in minor hyperparameters such as learning rate.
+
+Example output:`outputs/mnist/classifier/baseline/2021-03-10-141516`.
 
 
 </p>
@@ -225,7 +245,7 @@ With this separate, it's easy to use Hydra's [sweeper](https://hydra.cc/docs/plu
 
 ## Tips and tricks
 
-<details><summary>Click to expand</summary>
+<details><summary>Click to expand/collapse</summary>
 <p>
     
 ### Debug
@@ -242,7 +262,7 @@ This is super helpful to inspect the variables values when it fails, without hav
 
 ### Colored Logs
     
-It's 2021 already, don't squint at your 4K HDR Quantum dot monitor to find a line from the black&white log.
+It's 2021 already, don't squint at your 4K HDR Quantum dot monitor to find a line from the black & white log.
 `pip install hydra-colorlog` and edit `defaults.yaml` to colorize your log file:
 ```yaml
 defaults:
@@ -276,22 +296,22 @@ Alternative: https://github.com/direnv/direnv, https://github.com/cxreg/smartcd,
 
 ## TODO
 - [ ] Pre-commit hook for python `black`, `isort`.
-- [ ] Unit test (only where it makes sense).
 - [ ] [Experiments](https://hydra.cc/docs/next/patterns/configuring_experiments) 
+- [ ] Configure trainer's callbacks from configs as well.
 - [ ] [Structured Configs](https://hydra.cc/docs/next/tutorials/structured_config/intro/#internaldocs-banner)
 - [ ] [Hydra Torch](https://github.com/pytorch/hydra-torch) and [Hydra Lightning](https://github.com/romesco/hydra-lightning)
 - [ ] [Keepsake](https://keepsake.ai/) version control
+- [ ] (Maybe) Unit test (only where it makes sense).
 
 
-
-
-### DELETE EVERYTHING ABOVE FOR YOUR PROJECT  
+# DELETE EVERYTHING ABOVE FOR YOUR PROJECT  
  
 ---
 
 <div align="center">
  
-# ConSelfSTransDrLIB: Contrastive Self-supervised Transformer for Disentangled Representation Learning with Inductive Biases is All you need, and where to find them.   
+# ConSelfSTransDRLIB:
+## Contrastive Self-supervised Transformers for Disentangled Representation Learning with Inductive Biases is All you need, and where to find them.
 
 [![Paper](http://img.shields.io/badge/paper-arxiv.1001.2234-B31B1B.svg)](https://www.nature.com/articles/nature14539)
 [![Conference](http://img.shields.io/badge/NeurIPS-2019-4b44ce.svg)](https://papers.nips.cc/book/advances-in-neural-information-processing-systems-31-2018)

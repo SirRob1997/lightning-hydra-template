@@ -9,13 +9,11 @@ dependencies:
   - cudatoolkit=11.0
   - pytorch>=1.8
   - torchvision>=0.8
-  # Add pip as a dependencies in this environment
   - pip
-  # Use pip to installed packages not on conda
   - pip:
     - -e .  # Install project package in edit mode, so you don't have to run this everytime you edit your python files
-    - -r tests/requirements.txt  # Install packages only for testing purpose
-    - pytorch-lightning>=1.2.0  # Can also specify version requirements
+    - -r tests/requirements.txt
+    - pytorch-lightning>=1.2.0
     - hydra-core --pre  # Using 1.1 pre-release for the moment
     - hydra-colorlog --pre
-    - pudb  # Terminal debugger
+    - pudb

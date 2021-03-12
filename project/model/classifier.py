@@ -1,7 +1,7 @@
-import torch
-import pytorch_lightning as pl
-from torch.nn import functional as F
 import hydra
+import pytorch_lightning as pl
+import torch
+from torch.nn import functional as F
 
 
 class LitClassifier(pl.LightningModule):
@@ -22,11 +22,6 @@ class LitClassifier(pl.LightningModule):
         x = torch.relu(self.l1(x))
         x = torch.relu(self.l2(x))
         return x
-
-    # https://pytorch-lightning.readthedocs.io/en/latest/extensions/logging.html#logging-hyperparameters
-    # Using custom or multiple metrics (default_hp_metric=False)
-    def on_train_start(self):
-        self.logger.log_hyperparams(self.hparams, {"loss/val": 0, "accuracy/val": 0, "accuracy/test": 0})
 
     def training_step(self, batch, batch_idx):
         x, y = batch
@@ -60,3 +55,8 @@ class LitClassifier(pl.LightningModule):
 
     def configure_optimizers(self):
         return hydra.utils.instantiate(self.hparams.optim, params=self.parameters())
+
+    def on_train_start(self):
+        # Proper logging of hyperparams and metrics in TB
+        self.logger.log_hyperparams(self.hparams, {"loss/val": 0, "accuracy/val": 0, "accuracy/test": 0})
+

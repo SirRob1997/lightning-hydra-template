@@ -1,11 +1,10 @@
 import hydra
-from torch import nn
-import torch.nn.functional as F
 import pytorch_lightning as pl
+import torch.nn.functional as F
+from torch import nn
 
 
 class LitAutoEncoder(pl.LightningModule):
-
     def __init__(self, input_dim, output_dim, hidden_dim=64, optim_encoder=None, optim_decoder=None, **kwargs):
         super().__init__()
         self.save_hyperparameters()
@@ -38,3 +37,8 @@ class LitAutoEncoder(pl.LightningModule):
         encoder_optim = hydra.utils.instantiate(self.hparams.optim_encoder, params=self.encoder.parameters())
         decoder_optim = hydra.utils.instantiate(self.hparams.optim_decoder, params=self.decoder.parameters())
         return [encoder_optim, decoder_optim], []
+
+    def on_train_start(self):
+        # Proper logging of hyperparams and metrics in TB
+        self.logger.log_hyperparams(self.hparams, {"loss/val": 0, "accuracy/val": 0, "accuracy/test": 0})
+

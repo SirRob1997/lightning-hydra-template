@@ -1,12 +1,7 @@
-from argparse import ArgumentParser
-
-import torch
+import hydra
 import pytorch_lightning as pl
+import torch
 from torch.nn import functional as F
-from torch.utils.data import DataLoader, random_split
-
-from torchvision.datasets.mnist import MNIST
-from torchvision import transforms
 
 
 class Backbone(torch.nn.Module):
@@ -23,7 +18,7 @@ class Backbone(torch.nn.Module):
 
 
 class LitClassifier(pl.LightningModule):
-    def __init__(self, backbone, learning_rate=1e-3, **kwargs):
+    def __init__(self, backbone, optim, **kwargs):
         super().__init__()
         self.save_hyperparameters()
         self.backbone = backbone
@@ -54,10 +49,9 @@ class LitClassifier(pl.LightningModule):
 
     def configure_optimizers(self):
         # self.hparams available because we called self.save_hyperparameters()
-        return torch.optim.Adam(self.parameters(), lr=self.hparams.learning_rate)
+        return hydra.utils.initiate(self.hparams.optim, params=self.parameters)
 
-    @staticmethod
-    def add_model_specific_args(parent_parser):
-        parser = ArgumentParser(parents=[parent_parser], add_help=False)
-        parser.add_argument('--learning_rate', type=float, default=0.0001)
-        return parser
+    def on_train_start(self):
+        # Proper logging of hyperparams and metrics in TB
+        self.logger.log_hyperparams(self.hparams, {"loss/val": 0, "accuracy/val": 0, "accuracy/test": 0})
+

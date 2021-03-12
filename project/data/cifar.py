@@ -1,7 +1,7 @@
 import logging
 
 import pytorch_lightning as pl
-from torch.utils.data import random_split, DataLoader
+from torch.utils.data import DataLoader, random_split
 from torchvision.datasets import CIFAR10
 from torchvision.transforms import ToTensor
 

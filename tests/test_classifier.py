@@ -1,15 +1,15 @@
 from pytorch_lightning import Trainer, seed_everything
-from project.lit_mnist import LitClassifier
-from project.datasets.mnist import mnist
+from project.model.classifier import LitClassifier
+from project.data import MNISTDataModule
 
 
 def test_lit_classifier():
     seed_everything(1234)
 
     model = LitClassifier()
-    train, val, test = mnist()
+    dm = MNISTDataModule()
     trainer = Trainer(limit_train_batches=50, limit_val_batches=20, max_epochs=2)
-    trainer.fit(model, train, val)
+    trainer.fit(model, dm)
 
-    results = trainer.test(test_dataloaders=test)
+    results = trainer.test(datamodule=dm)
     assert results[0]['test_acc'] > 0.7

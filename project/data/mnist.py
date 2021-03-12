@@ -1,7 +1,8 @@
 import pytorch_lightning as pl
-from torch.utils.data import random_split, DataLoader
+from torch.utils.data import DataLoader, random_split
 from torchvision.datasets import MNIST
-from torchvision.transforms import Compose, ToTensor
+from torchvision.transforms import ToTensor
+
 
 class MNISTDataModule(pl.LightningDataModule):
     def __init__(self, data_dir: str = "", batch_size: int = 32, num_workers: int = 8, **kwargs):
