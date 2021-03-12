@@ -19,8 +19,10 @@ I hope to maintaining this repo with better deep learning engineering practices 
 ### 0. Clone this template
 ```bash
 # clone project or create a new one from GitHub's template
-git clone https://github.com/lkhphuc/pytorch-lightning-template
-cd pytorch-lightning-template
+git clone https://github.com/lkhphuc/lightning-hydra-template new-project
+cd new-project
+rm -rf .git
+git init  # Start of a new git history
 ```
 
 ### 1. Add project's info
